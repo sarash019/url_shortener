@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  # The Primary Database (PostgreSQL)
+  postgres_db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password123
+      POSTGRES_DB: link_service_db
+    ports:
+      - "5432:5432"
+
+  # The Cache Layer (Redis)
+  redis_cache:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"

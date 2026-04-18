@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuyHatke | URL Shortener</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f7f6; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        h1 { color: #333; margin-bottom: 1.5rem; }
+        input { width: 90%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; margin-bottom: 1rem; font-size: 16px; }
+        button { width: 97%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #0056b3; }
+        #result { margin-top: 1.5rem; padding: 10px; background: #e9ecef; border-radius: 6px; display: none; word-break: break-all; }
+        a { color: #007bff; font-weight: bold; text-decoration: none; }
+    </style>
+<body>
+    <div class="card">
+        <h1>URL Shortener</h1>
+        <input type="text" id="longUrl" placeholder="Paste your long link here...">
+        <button onclick="shorten()">Shorten Link</button>
+        <div id="result">
+            Short Link: <br>
+            <a id="shortLink" href="#" target="_blank"></a>
+        </div>
+    </div>
+
+    <script>
+        async function shorten() {
+            const longUrl = document.getElementById('longUrl').value;
+            const resBox = document.getElementById('result');
+            const linkTag = document.getElementById('shortLink');
+
+            if(!longUrl) return alert("Please enter a URL");
+
+            const response = await fetch('/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ longUrl })
+            });
+
+            const data = await response.json();
+            if(data.shortUrl) {
+                linkTag.href = data.shortUrl;
+                linkTag.innerText = data.shortUrl;
+                resBox.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
