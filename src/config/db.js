@@ -1,18 +1,17 @@
 const { Pool } = require('pg');
-require('dotenv').config();
 
-// The "Pool" manages multiple connections to the database automatically
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL, // Used in Production
+  // Fallback for Local Development:
+  user: process.env.DB_USER || 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  database: process.env.DB_NAME || 'url_shortener',
+  password: process.env.DB_PASSWORD || 'yourpassword',
+  port: process.env.DB_PORT || 5432,
 });
 
 pool.on('connect', () => {
   console.log('PostgreSQL: Connected successfully');
-});
-
-pool.on('error', (err) => {
-  console.error('PostgreSQL: Unexpected error', err);
-  process.exit(-1);
 });
 
 module.exports = {
