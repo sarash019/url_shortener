@@ -1,11 +1,11 @@
 const urlController = require('../controllers/urlController');
 
 async function urlRoutes(fastify, options) {
-    // Path to create a short URL
+    // Connects the POST /shorten path to the controller function
     fastify.post('/shorten', urlController.createShortUrl);
-
-    // Path to redirect from a short code
-    fastify.get('/:shortCode', urlController.redirectToUrl);
+    
+    // Handles the redirects via the shortCode parameter
+    fastify.get('/:shortCode', urlController.redirectToOriginal);
 }
 
 module.exports = urlRoutes;

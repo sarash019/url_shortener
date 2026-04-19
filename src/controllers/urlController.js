@@ -1,3 +1,5 @@
+const urlService = require('../services/urlService');
+
 const createShortUrl = async (request, reply) => {
     const { longUrl, customSlug } = request.body;
     
@@ -7,7 +9,7 @@ const createShortUrl = async (request, reply) => {
         let slugToUse = null;
 
         if (customSlug && customSlug.trim() !== "") {
-            // Sanitize the slug
+            // Sanitize the slug (lowercase, no spaces, clean characters)
             slugToUse = customSlug
                 .trim()
                 .toLowerCase()
@@ -19,7 +21,7 @@ const createShortUrl = async (request, reply) => {
             const existingEntry = await urlService.getOriginalEntry(slugToUse); 
             
             if (existingEntry) {
-                // 2. If it exists and the Long URL is the SAME, just return it!
+                // 2. If it exists for the SAME URL, just return it without error
                 if (existingEntry.long_url === longUrl) {
                     const host = request.headers.host;
                     return reply.status(200).send({
@@ -28,13 +30,13 @@ const createShortUrl = async (request, reply) => {
                         message: "Existing link retrieved!"
                     });
                 } else {
-                    // 3. If it exists but points to a DIFFERENT URL, show error
-                    return reply.status(400).send({ error: 'This custom name is already taken by a different URL!' });
+                    // 3. Conflict: Slug belongs to a different website
+                    return reply.status(400).send({ error: 'This custom name is already taken!' });
                 }
             }
         }
 
-        // If it's a new slug or a random one, proceed as usual
+        // If it's a new slug or a random one, proceed with shortening
         const urlData = await urlService.shortenURL(longUrl, slugToUse);
         const host = request.headers.host;
 
@@ -43,7 +45,25 @@ const createShortUrl = async (request, reply) => {
             originalUrl: urlData.long_url
         });
     } catch (err) {
-        console.error("ERROR:", err);
+        console.error("Internal Logic Error:", err);
         return reply.status(500).send({ error: 'Internal Server Error' });
     }
+};
+
+const redirectToOriginal = async (request, reply) => {
+    const { shortCode } = request.params;
+    try {
+        const longUrl = await urlService.getLongURL(shortCode);
+        if (longUrl) {
+            return reply.redirect(longUrl);
+        }
+        return reply.status(404).send({ error: 'URL not found' });
+    } catch (err) {
+        return reply.status(500).send({ error: 'Internal Server Error' });
+    }
+};
+
+module.exports = {
+    createShortUrl,
+    redirectToOriginal
 };
