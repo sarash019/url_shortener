@@ -1,5 +1,3 @@
-const urlService = require('../services/urlService');
-
 const createShortUrl = async (request, reply) => {
     const { longUrl, customSlug } = request.body;
     
@@ -9,26 +7,34 @@ const createShortUrl = async (request, reply) => {
         let slugToUse = null;
 
         if (customSlug && customSlug.trim() !== "") {
-            // THE POLISH: Sanitize the slug
+            // Sanitize the slug
             slugToUse = customSlug
                 .trim()
                 .toLowerCase()
-                .replace(/\s+/g, '-')           // Replace spaces with hyphens
-                .replace(/[^a-z0-9-]/g, '')     // Remove anything not a-z, 0-9, or -
-                .replace(/-+/g, '-');           // Remove double hyphens (-- to -)
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '')
+                .replace(/-+/g, '-');
 
-            // Validation: Make sure it's not too short after cleaning
-            if (slugToUse.length < 2) {
-                return reply.status(400).send({ error: 'Custom name must be at least 2 characters long.' });
-            }
-
-            // Check if this cleaned slug is already taken
-            const existingUrl = await urlService.getLongURL(slugToUse);
-            if (existingUrl) {
-                return reply.status(400).send({ error: 'This custom name is already taken!' });
+            // 1. Check if this slug already exists in the database
+            const existingEntry = await urlService.getOriginalEntry(slugToUse); 
+            
+            if (existingEntry) {
+                // 2. If it exists and the Long URL is the SAME, just return it!
+                if (existingEntry.long_url === longUrl) {
+                    const host = request.headers.host;
+                    return reply.status(200).send({
+                        shortUrl: `http://${host}/${slugToUse}`,
+                        originalUrl: longUrl,
+                        message: "Existing link retrieved!"
+                    });
+                } else {
+                    // 3. If it exists but points to a DIFFERENT URL, show error
+                    return reply.status(400).send({ error: 'This custom name is already taken by a different URL!' });
+                }
             }
         }
 
+        // If it's a new slug or a random one, proceed as usual
         const urlData = await urlService.shortenURL(longUrl, slugToUse);
         const host = request.headers.host;
 
@@ -41,21 +47,3 @@ const createShortUrl = async (request, reply) => {
         return reply.status(500).send({ error: 'Internal Server Error' });
     }
 };
-
-const redirectToUrl = async (request, reply) => {
-    const { shortCode } = request.params;
-    if (!shortCode || shortCode === 'favicon.ico') return;
-
-    try {
-        const longUrl = await urlService.getLongURL(shortCode);
-        if (longUrl) {
-            return reply.redirect(longUrl);
-        } else {
-            return reply.status(404).send({ error: 'URL not found' });
-        }
-    } catch (err) {
-        return reply.status(500).send({ error: 'Internal Server Error' });
-    }
-};
-
-module.exports = { createShortUrl, redirectToUrl };
