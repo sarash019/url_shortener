@@ -1,14 +1,13 @@
-const { nanoid } = require('nanoid');
+const CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-/**
- * Generates a unique 6-character short code using 
- * the nanoid library.
- */
-const generateShortCode = () => {
-    // 6 characters provides billions of unique combinations
-    return nanoid(6); 
+const encode = (num) => {
+    let str = "";
+    while (num > 0) {
+        str = CHARS[num % 62] + str;
+        num = Math.floor(num / 62);
+    }
+    return str || "0";
 };
 
-module.exports = {
-    encode
-};
+// This is the part that might be causing the error:
+module.exports = { encode };
