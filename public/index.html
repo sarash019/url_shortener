@@ -3,126 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart | URL Shortener</title>
+    <title>Smart URL Shortener | Premium Link Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f0f2f5; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-        }
-        .container { 
-            background: white; 
-            padding: 2.5rem; 
-            border-radius: 15px; 
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 450px; 
-            text-align: center; 
-        }
-        h1 { color: #1a73e8; margin-bottom: 0.5rem; }
-        p { color: #5f6368; margin-bottom: 2rem; font-size: 14px; }
-        
-        .input-group { margin-bottom: 1rem; text-align: left; }
-        label { display: block; font-size: 12px; font-weight: bold; color: #5f6368; margin-bottom: 5px; margin-left: 5px; }
-        
-        input { 
-            width: 93%; 
-            padding: 12px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            outline: none; 
-            transition: 0.3s; 
-        }
-        input:focus { border-color: #1a73e8; }
-        
-        .custom-slug-input { 
-            border-style: dashed; 
-            background: #fafafa; 
-            font-family: monospace; 
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
         }
 
-        button { 
-            width: 100%; 
-            padding: 14px; 
-            background: #1a73e8; 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            margin-top: 10px;
-        }
-        button:hover { background: #1557b0; transform: translateY(-1px); }
-        button:active { transform: translateY(0px); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-        #result { 
-            display: none; 
-            margin-top: 2rem; 
-            padding: 15px; 
-            background: #e8f0fe; 
-            border-radius: 8px; 
-            border: 1px solid #c6dafc; 
-            word-break: break-all; 
-            animation: fadeIn 0.5s ease;
+        body {
+            background: radial-gradient(circle at top left, #1e1b4b, var(--bg));
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .result-label { font-size: 13px; color: #1a73e8; margin-bottom: 5px; font-weight: bold; }
-        a { color: #1a73e8; text-decoration: none; font-size: 18px; font-weight: bold; }
-        a:hover { text-decoration: underline; }
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p { color: #94a3b8; margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .input-group { text-align: left; margin-bottom: 1.5rem; }
+
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+
+        #result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px dashed #10b981;
+            border-radius: 16px;
+            display: none;
+        }
+
+        .success-text { color: #34d399; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.8rem; }
+        
+        .short-url {
+            display: block;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .short-url:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>URL Shortener</h1>
-        <p>Create clean, memorable links in seconds.</p>
-        
+        <h1>SmartURL</h1>
+        <p>Shorten, manage, and track your links with cloud speed.</p>
+
         <div class="input-group">
-            <label>LONG URL</label>
-            <input type="text" id="longUrl" placeholder="https://github.com/sarash019/project">
+            <label>Destination URL</label>
+            <input type="url" id="longUrl" placeholder="https://github.com/sarash019?tab=repositories..." required>
         </div>
 
         <div class="input-group">
-            <label>CUSTOM NAME (OPTIONAL)</label>
-            <input type="text" id="customSlug" class="custom-slug-input" placeholder="e.g. my-portfolio" oninput="sanitizeInput(this)">
+            <label>Custom Name (Optional)</label>
+            <input type="text" id="customSlug" placeholder="e.g. my-portfolio">
         </div>
 
         <button onclick="shorten()">Shorten URL</button>
-        
+
         <div id="result">
-            <div class="result-label">SUCCESS! YOUR LINK IS READY:</div>
-            <a id="shortLink" href="#" target="_blank"></a>
+            <p class="success-text">SUCCESS! YOUR LINK IS READY:</p>
+            <a id="shortLink" class="short-url" target="_blank"></a>
         </div>
     </div>
 
     <script>
-        // Real-time sanitization as the user types
-        function sanitizeInput(input) {
-            let val = input.value;
-            // Lowercase, replace spaces with hyphens, remove special characters
-            val = val.toLowerCase()
-                     .replace(/\s+/g, '-')
-                     .replace(/[^a-z0-9-]/g, '');
-            input.value = val;
-        }
-
         async function shorten() {
-            const longUrl = document.getElementById('longUrl').value.trim();
-            const customSlug = document.getElementById('customSlug').value.trim();
-            const resBox = document.getElementById('result');
-            const linkTag = document.getElementById('shortLink');
+            const longUrl = document.getElementById('longUrl').value;
+            const customSlug = document.getElementById('customSlug').value;
+            const resultDiv = document.getElementById('result');
+            const shortLink = document.getElementById('shortLink');
 
-            if(!longUrl) {
-                alert("Please paste a long URL first!");
-                return;
-            }
+            if (!longUrl) { alert("Please enter a URL"); return; }
 
             try {
                 const response = await fetch('/shorten', {
@@ -133,18 +149,15 @@
 
                 const data = await response.json();
                 
-                if(response.ok) {
-                    linkTag.href = data.shortUrl;
-                    linkTag.innerText = data.shortUrl;
-                    resBox.style.display = 'block';
-                    // Scroll to result on small screens
-                    resBox.scrollIntoView({ behavior: 'smooth' });
+                if (response.ok) {
+                    resultDiv.style.display = 'block';
+                    shortLink.href = data.shortUrl;
+                    shortLink.innerText = data.shortUrl;
                 } else {
-                    alert("Ops! " + (data.error || "Something went wrong"));
+                    alert(data.error || "Something went wrong");
                 }
             } catch (err) {
-                console.error(err);
-                alert("Server connection failed. Is your Node server running?");
+                alert("Error connecting to server");
             }
         }
     </script>
