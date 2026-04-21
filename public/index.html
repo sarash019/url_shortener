@@ -3,93 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart URL Shortener | Premium Link Management</title>
+    <title>SmartURL | Secure, Anonymous, Fast Link Shortening</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --bg: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #0ea5e9; /* Cyber Blue */
+            --secondary: #6366f1; /* Indigo */
+            --bg: #030712; /* Very Dark Blue */
+            --card-bg: rgba(17, 24, 39, 0.65); /* Transparent Card */
             --text: #f8fafc;
+            --hacker-green: rgba(56, 189, 248, 0.1); /* Subtle blue matrix code */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            background: radial-gradient(circle at top left, #1e1b4b, var(--bg));
+            background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow: hidden; /* Prevent background scroll */
+            position: relative;
         }
 
+        /* --- THE HACKER BACKGROUND EFFECT --- */
+        body::before {
+            content: "SmartURL/api/v1/redirect GET postgresql/select*FROMurlsWHEREshort_code=$1 redis/get(short_code) STATUS:200.OK latency:1.2ms SmartURL/api/v1/shorten POST/urls{long_url,customSlug} Status:201.Created ... SmartURL/v2.1/admin analytics/tracking increment(clicks) SmartURL_CLOUD_DEPLOY/status_ONLINE ... ";
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: var(--hacker-green);
+            white-space: wrap;
+            top: -100px;
+            left: 0;
+            width: 110%;
+            height: 200%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.7;
+            animation: hackerfall 120s linear infinite;
+        }
+
+        @keyframes hackerfall {
+            from { transform: translateY(0); }
+            to { transform: translateY(-30%); }
+        }
+
+        /* --- MAIN CONTAINER --- */
         .container {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 3rem;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
             width: 100%;
             max-width: 500px;
             text-align: center;
             transition: transform 0.3s ease;
+            position: relative;
+            z-index: 10; /* Ensure card is above background */
         }
 
         h1 {
             font-weight: 800;
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #818cf8, #c084fc);
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
         }
 
         p { color: #94a3b8; margin-bottom: 2rem; font-size: 0.95rem; }
 
         .input-group { text-align: left; margin-bottom: 1.5rem; }
 
-        label { display: block; margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
 
         input {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid #334155;
+            padding: 14px 18px;
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid #1f2937;
             border-radius: 12px;
             color: white;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15); }
 
+        input::placeholder { color: #4b5563; }
+
+        /* --- SUBMIT BUTTON --- */
         button {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
+            transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.2);
         }
 
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button:active { transform: translateY(0); }
+        button:hover { opacity: 0.95; transform: translateY(-1.5px); box-shadow: 0 12px 20px -5px rgba(14, 165, 233, 0.3); }
+        button:active { transform: translateY(0); box-shadow: 0 5px 10px -2px rgba(14, 165, 233, 0.2); }
 
+        /* --- RESULT BOX --- */
         #result {
             margin-top: 2rem;
             padding: 1.5rem;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px dashed #10b981;
-            border-radius: 16px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 18px;
             display: none;
         }
 
@@ -97,36 +134,39 @@
         
         .short-url {
             display: block;
-            color: white;
+            color: #f1f5f9;
             text-decoration: none;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             word-break: break-all;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .short-url:hover { text-decoration: underline; }
+        .short-url:hover { text-decoration: underline; background: rgba(30, 41, 59, 0.8); }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>SmartURL</h1>
-        <p>Shorten, manage, and track your links with cloud speed.</p>
+        <p>Shorten, secure, and manage your links with cloud speed.</p>
 
         <div class="input-group">
             <label>Destination URL</label>
-            <input type="url" id="longUrl" placeholder="https://github.com/sarash019?tab=repositories..." required>
+            <input type="url" id="longUrl" placeholder="https://very-long-link.com/..." required>
         </div>
 
         <div class="input-group">
-            <label>Custom Name (Optional)</label>
-            <input type="text" id="customSlug" placeholder="e.g. my-portfolio">
+            <label>Custom Slug (Optional)</label>
+            <input type="text" id="customSlug" placeholder="e.g. secure-repo">
         </div>
 
-        <button onclick="shorten()">Shorten URL</button>
+        <button onclick="shorten()">Generate Link</button>
 
         <div id="result">
-            <p class="success-text">SUCCESS! YOUR LINK IS READY:</p>
+            <p class="success-text">SYSTEM://SECURE_LINK_GENERATED.SUCCESS</p>
             <a id="shortLink" class="short-url" target="_blank"></a>
         </div>
     </div>
@@ -138,7 +178,7 @@
             const resultDiv = document.getElementById('result');
             const shortLink = document.getElementById('shortLink');
 
-            if (!longUrl) { alert("Please enter a URL"); return; }
+            if (!longUrl) { alert("ERROR: Please enter a valid URL."); return; }
 
             try {
                 const response = await fetch('/shorten', {
@@ -154,10 +194,10 @@
                     shortLink.href = data.shortUrl;
                     shortLink.innerText = data.shortUrl;
                 } else {
-                    alert(data.error || "Something went wrong");
+                    alert("API ERROR: " + (data.error || "Unknown Conflict. Check your custom slug."));
                 }
             } catch (err) {
-                alert("Error connecting to server");
+                alert("SYSTEM ERROR: Cannot connect to SmartURL server.");
             }
         }
     </script>
